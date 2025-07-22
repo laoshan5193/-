@@ -1,0 +1,35 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+
+proxies:
+  - name: "xiaoshan"
+    type: ss
+    server: 106.75.35.157  # 需替换为实际服务器IP
+    port: 10060
+    cipher: aes-256-gcm
+    password: "doxPnhQDBWlo"
+    udp: true
+
+proxy-groups:
+  - name: "ARK专用"
+    type: select
+    proxies:
+      - "xiaoshan"
+  - name: "国内流量"
+    type: select
+    proxies:
+      - "xiaoshan"
+  - name: "自动选择"
+    type: url-test
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    proxies:
+      - "xiaoshan"
+
+rules:
+  - DOMAIN-SUFFIX,ark.cn-beijing.volces.com,ARK专用
+  - GEOIP,CN,国内流量
+  - MATCH,自动选择
